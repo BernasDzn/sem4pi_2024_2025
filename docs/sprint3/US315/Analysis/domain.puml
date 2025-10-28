@@ -1,0 +1,61 @@
+@startuml domain
+
+hide circles
+skinparam node {
+  BorderColor white
+  BackgroundColor white
+}
+
+rectangle " " as showProposal_rec{
+
+    entity "**ShowProposal**" as showProposal <<AggregateRoot>> <<Entity>>{}
+
+
+    entity "Proposed\n**Date**" as showpropDate <<Value>> <<Date>>{
+        + date
+    }
+
+    entity "Proposed\n**Time**" as showpropTime <<Value>> <<Time>>{
+        + time
+    }
+
+    entity "Proposed\n**Duration**" as showpropDuration <<Value>> <<Time>>{
+        + duration
+    }
+
+    entity "Proposed\n**Place**" as showpropPlace <<Value>> <<Gelocation>>{
+        + latitude
+        + longitude
+    }
+
+    entity "Proposed\n**DroneList**" as showpropDroneList <<Value>>{
+        + number_of_drones
+    }
+
+    entity "ShowProposal\n**Description**" as showpropDescription <<Value>> <<Document>>{
+        + show_proposal_doc
+    }
+
+    entity "ShowProposal\n**Video**" as showpropVideo <<Value>> <<Video>>{
+        + video_url
+    }
+
+    showProposal -u-> "1" showpropDate
+    showProposal -u-> "1" showpropTime
+    showProposal -u-> "1" showpropDuration
+    showProposal -u-> "1" showpropPlace
+    showProposal -r-> "1" showpropDroneList
+    showProposal -u-> "1" showpropDescription
+    showProposal -u-> "1" showpropVideo
+
+}
+
+rectangle " " as showRequest_rec{
+
+	entity "**ShowRequest**" as showRequest <<AggregateRoot>> <<Entity>>{}
+
+}
+
+showProposal -d-> "1" showRequest : is a proposal for
+
+@enduml

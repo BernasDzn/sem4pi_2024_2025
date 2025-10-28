@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>shodrone</groupId>
+        <artifactId>shodrone</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>shodrone.dl_plugin</artifactId>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <name>Shodrone DL Plugin</name>
+    <description>ANTLR-based parser for Shodrone Drone Language Recognizers</description>
+    <dependencies>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.13.2</version> </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>4.13.2</version>
+                <executions>
+                    <execution>
+                        <id>antlr-dl-0-86-generate</id>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>src/main/antlr4/shodrone/dl_0_86</sourceDirectory>
+                            <visitor>true</visitor>
+                            <listener>true</listener>
+                            <outputDirectory>${project.build.directory}/generated-sources/antlr4/shodrone/dl_0_86</outputDirectory>
+                            <arguments>
+                                <argument>-package</argument>
+                                <argument>shodrone.dl_0_86</argument>
+                            </arguments>
+                            </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>antlr-dl-0-666-generate</id>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>src/main/antlr4/shodrone/dl_0_666</sourceDirectory>
+                            <visitor>true</visitor>
+                            <listener>true</listener>
+                            <outputDirectory>${project.build.directory}/generated-sources/antlr4/shodrone/dl_0_666</outputDirectory>
+                            <arguments>
+                                <argument>-package</argument>
+                                <argument>shodrone.dl_0_666</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>add-antlr4-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/antlr4/shodrone/dl_0_86</source>
+                                <source>${project.build.directory}/generated-sources/antlr4/shodrone/dl_0_666</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

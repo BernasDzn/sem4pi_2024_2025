@@ -1,0 +1,36 @@
+@startuml domain_model
+
+hide circles
+skinparam node {
+    BorderColor white
+    BackgroundColor white
+}
+
+rectangle " " as showProposal_rec{
+
+    entity "**ShowProposal**" as showProposal <<AggregateRoot>> <<Entity>>{}
+
+    entity "ShowProposal\n**Figures**" as showpropFigures <<Entity>>{
+    }
+     entity "ShowProposal\n**FigureEntry**" as showpropFigureEntry <<Entity>>{
+        + orderNumber
+    }
+
+    entity "ShowProposal\n**DroneModelTypes**" as showpropDroneList <<Entity>>{
+        + droneTypes
+    }
+
+
+    showProposal -d-> "*" showpropDroneList
+    showProposal -d-> "1" showpropFigures
+    showpropFigures "1" -d-> "*" showpropFigureEntry
+}
+
+entity "**DroneModel**" as droneModel <<AggregateRoot>> <<Entity>>{}
+entity "**Figure**" as figure <<AggregateRoot>> <<Entity>>{}
+
+showpropDroneList "1" ---> "1" droneModel : has a
+showpropDroneList "1" ---> "1" figure : has a
+showpropFigureEntry "1" --> "1" figure : has a
+
+@enduml

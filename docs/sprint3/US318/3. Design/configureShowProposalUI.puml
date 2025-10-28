@@ -1,0 +1,53 @@
+@startuml
+
+
+participant configureShowProposalAction
+participant configureShowProposalUI
+participant configureShowProposalController
+participant ShowProposalTemplate
+participant DocumentValidator
+
+
+
+activate configureShowProposalAction
+configureShowProposalAction -> configureShowProposalUI : configureShowProposalUI().show()
+    activate configureShowProposalUI
+     configureShowProposalUI -> configureShowProposalAction: getTemplate()
+configureShowProposalUI-> ShowProposalTemplate: validate(template)
+activate ShowProposalTemplate
+ShowProposalTemplate -> DocumentValidator:validatePreGeneration(template, substituions)
+activate DocumentValidator
+DocumentValidator --> ShowProposalTemplate
+deactivate DocumentValidator
+ShowProposalTemplate --> configureShowProposalUI
+deactivate ShowProposalTemplate
+        configureShowProposalAction ->configureShowProposalUI
+
+configureShowProposalUI -> configureShowProposalController: configureTemplate()
+activate configureShowProposalController
+                                                configureShowProposalController -> PersistenceContext : repositories()
+                                                activate PersistenceContext
+                                                    PersistenceContext -> AppSettings : instance()
+                                                    activate AppSettings
+                                                    PersistenceContext -> AppSettings : getRepositoryFactory()
+                                                        deactivate PersistenceContext
+                                                        AppSettings --> RepositoryFactory : create()
+                                                        activate RepositoryFactory
+                                                        RepositoryFactory --> AppSettings
+                                                        AppSettings --> configureShowProposalController
+                                                        deactivate AppSettings
+                                                configureShowProposalController -> RepositoryFactory : showProposalTemplateRepository()
+                                                RepositoryFactory -> ShowProposalTemplateRepository : create()
+                                                deactivate RepositoryFactory
+                                                activate ShowProposalTemplateRepository
+                                                ShowProposalTemplateRepository --> configureShowProposalController
+configureShowProposalController -> ShowProposalTemplateRepository : save(template)
+ShowProposalTemplateRepository --> configureShowProposalController
+deactivate ShowProposalTemplateRepository
+                                                configureShowProposalController --> configureShowProposalUI : added
+
+                                                deactivate configureShowProposalController
+configureShowProposalUI -> configureShowProposalAction
+deactivate configureShowProposalUI
+deactivate configureShowProposalAction
+@enduml

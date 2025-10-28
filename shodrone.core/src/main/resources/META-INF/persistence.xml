@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence">
+  <persistence-unit name="shodrone">
+    <!--
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    -->
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+    <class>eapli.framework.infrastructure.authz.domain.model.SystemUser</class>
+    <class>eapli.framework.infrastructure.authz.domain.model.Role</class>
+    <class>eapli.framework.infrastructure.authz.domain.model.RoleSet</class>
+    <class>eapli.framework.infrastructure.authz.domain.model.RoleAssignment</class>
+    <class>shodrone.core.domain.utente.Utente</class>
+    <class>shodrone.core.domain.signuprequest.SignupRequest</class>
+    <class>shodrone.core.domain.showrequest.ShowRequest</class>
+    <class>shodrone.core.domain.showrequest.ShowRequestVersion</class>
+    <class>shodrone.core.domain.figurecategory.FigureCategory</class>
+    <class>shodrone.core.domain.customer.Customer</class>
+    <class>shodrone.core.domain.figure.Figure</class>
+    <class>shodrone.core.domain.figure.figurekeyword.FigureKeyword</class>
+    <class>shodrone.core.domain.showproposal.ShowProposal</class>
+    <class>shodrone.core.domain.showproposal.ShowProposalTemplate</class>
+    <class>shodrone.core.domain.showproposal.ShowProposalFigures</class>
+    <class>shodrone.core.domain.showproposal.ShowProposalFigureEntry</class>
+    <class>shodrone.core.domain.show.Show</class>
+
+
+    <properties>
+      <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:tcp://vsgate-s2.dei.isep.ipp.pt:10797/shodroneexemplo"/>
+
+      <property name="jakarta.persistence.jdbc.user" value="root"/>
+      <property name="jakarta.persistence.jdbc.password" value="root"/>
+      <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
+      <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
+      <!-- <property name="eclipselink.logging.level" value="FINE"/> -->
+      <!-- <property name = "hibernate.show_sql" value = "true" /> -->
+      <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+
+    </properties>
+  </persistence-unit>
+</persistence>

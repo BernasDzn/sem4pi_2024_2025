@@ -1,0 +1,266 @@
+@startuml domain_model
+
+hide circles
+skinparam node {
+    BorderColor white
+    BackgroundColor white
+}
+
+rectangle " " as customer_rec{
+    entity "**Customer**" as customer <<Aggregate Root>> <<Entity>> {}
+
+    entity "**VATNumber**" as customerVAT <<Value>>{
+        + country_code
+        + unique_number
+    }
+
+    entity "Customer\n**Address**" as customerAddress <<Value>><<Address>>{
+        + street_name
+        + address_number
+        + postal_code
+        + country
+        + city
+    }
+
+    entity "Customer\n**Name**" as customerName <<Value>> <<Designation>>{
+        + name
+    }
+
+    entity "Customer\n**Status**" as customerStatus <<Enum>>{
+        INFRINGEMENT
+        DELETED
+        CREATED
+        REGULAR
+        VIP
+    }
+
+    customer --> "1" customerVAT
+    customer --> "1" customerAddress
+    customer --> "1" customerName
+    customer --> "1" customerStatus
+}
+
+rectangle " " as customerRepresentative_rec{
+    entity "Customer\n**Representative**" as customerRep <<Aggregate Root>> <<Entity>>{}
+
+    entity "Representative\n**Email**" as repEmail <<Value>> <<Email>>{
+        + local_part
+        + domain
+    }
+
+    entity "Representative\n**Name**" as repName <<Value>> <<Designation>>{
+        + first_name
+        + last_name
+    }
+
+    entity "Representative\n**Position**" as repPosition <<Value>>{
+        + position_name
+    }
+
+    entity "Representative\n**Status**" as repStatus <<Enum>>{
+        ACTIVE
+        INACTIVE
+    }
+
+    entity "ClientApp\n**User**" as custRepClientAppUser <<User>> #dddddd{
+        + username
+        + password
+    }
+
+    customerRep --> "1" repEmail
+    customerRep --> "1" repName
+    customerRep --> "1" repPosition
+    customerRep --> "1" repStatus
+    customerRep -l-|> custRepClientAppUser
+}
+
+node " " as figure_node{
+    rectangle " " as figure_rec{
+        entity "**Figure**" as figure <<AggregateRoot>> <<Entity>>{}
+
+        entity "Figure\n**Description**" as figureDescription <<Value>> <<Description>>{
+            + description
+        }
+
+        entity "Figure\n**Version**" as figureVersion <<Value>>{
+            + version_number
+        }
+
+        entity "Figure\n**Name**" as figureName <<Value>> <<Designation>>{
+            + name
+        }
+
+        entity "**FigureDSL**" as figureDSL <<Value>> <<DSL>>{
+            + dsl_version
+            + dsl_syntax
+            + drone_types
+        }
+
+        entity "Figure\n**Status**" as figureStatus <<Enumerator>>{
+            COMISSIONED
+            DECOMISSIONED
+            PRIVATE
+        }
+
+
+
+        figure -u-> "1" figureDescription
+        figure -u-> "1" figureVersion
+        figure -u-> "1" figureName
+        figure -u-> "1" figureDSL
+        figure -u-> "1" figureStatus
+
+    }
+
+  rectangle " " as Keyword{
+    entity "Figure\n**Keyword**" as figureKeywords <<Entity>>{
+                 + keyword
+             }
+}
+
+    rectangle " " as figureCategory_rec{
+        entity "**FigureCategory**" as figureCategory <<AggregateRoot>> <<Entity>>{}
+
+        entity "FigureCategory\n**Name**" as figureCategoryName <<Value>> <<Designation>>{
+            + name
+        }
+
+        entity "FigureCategory\n**Description**" as figureCategoryDescription <<Value>> <<Description>>{
+            + description
+        }
+
+        figureCategory --> "1" figureCategoryName
+        figureCategory --> "1" figureCategoryDescription
+    }
+}
+
+rectangle " " as droneModel_rec{
+    entity "**DroneModel**" as droneModel <<AggregateRoot>> <<Entity>>{}
+
+    entity "DroneModel\n**Name**" as droneName <<Value>> <<Designation>>{
+        + name
+    }
+
+    entity "**DroneDSL**" as droneDSL <<Value>> <<DSL>>{
+        + dsl_version
+        + dsl_syntax
+    }
+
+    droneModel --> "1" droneName
+    droneModel --> "1" droneDSL
+}
+
+rectangle " " as showRequest_rec{
+
+    entity "**ShowRequest**" as showRequest <<AggregateRoot>> <<Entity>>{}
+
+    entity "Requested\n**Place**" as showreqPlace <<Value>> <<Gelocation>>{
+        + latitude
+        + longitude
+    }
+
+    entity "Requested\n**Date**" as showreqDate <<Value>> <<Date>>{
+        + date
+    }
+
+    entity "Requested\n**Time**" as showreqTime <<Value>> <<Time>>{
+        + time
+    }
+
+    entity "Requested\n**Duration**" as showreqDuration <<Value>> <<Time>>{
+        + duration
+    }
+
+    entity "Requested\n**NumberOfDrones**" as showreqNofDrones <<Value>> <<Quantity>>{
+        + number_of_drones
+    }
+
+    entity "ShowRequest\n**Description**" as showreqDescription <<Value>> <<Document>>{
+        + show_request_doc
+    }
+
+    entity "**ShowDesigner**" as showreqShowDesigner <<User>> #dddddd{}
+
+    showRequest -u-> "1" showreqDescription
+    showRequest -u-> "1" showreqPlace
+    showRequest -u-> "1" showreqDate
+    showRequest -u-> "1" showreqTime
+    showRequest -u-> "1" showreqDuration
+    showRequest -u-> "1" showreqNofDrones
+    showRequest "*" -l-> "0..*" showreqShowDesigner : assigned to
+
+}
+
+rectangle " " as showProposal_rec{
+
+    entity "**ShowProposal**" as showProposal <<AggregateRoot>> <<Entity>>{}
+
+
+    entity "Proposed\n**Date**" as showpropDate <<Value>> <<Date>>{
+        + date
+    }
+
+    entity "Proposed\n**Time**" as showpropTime <<Value>> <<Time>>{
+        + time
+    }
+
+    entity "Proposed\n**Duration**" as showpropDuration <<Value>> <<Time>>{
+        + duration
+    }
+
+    entity "Proposed\n**Place**" as showpropPlace <<Value>> <<Gelocation>>{
+        + latitude
+        + longitude
+    }
+
+    entity "ShowProposal\n**Figures**" as showpropFigures <<Entity>>{
+    }
+
+    entity "ShowProposal\n**FigureEntry**" as showpropFigureEntry <<Entity>>{
+        + orderNumber
+    }
+
+    entity "ShowProposal\n**DroneModelTypes**" as showpropDroneList <<Entity>>{
+        + droneTypes
+    }
+
+    entity "ShowProposal\n**Description**" as showpropDescription <<Value>> <<Document>>{
+        + show_proposal_doc
+    }
+
+    entity "ShowProposal\n**Video**" as showpropVideo <<Value>> <<Video>>{
+        + video_url
+    }
+
+    showProposal -u-> "1" showpropDate
+    showProposal -u-> "1" showpropTime
+    showProposal -u-> "1" showpropDuration
+    showProposal -u-> "1" showpropPlace
+    showProposal -r-> "*" showpropDroneList
+    showProposal -u-> "1" showpropDescription
+    showProposal -u-> "1" showpropVideo
+    showProposal -u-> "1" showpropFigures
+    showpropFigures -d-> "*" showpropFigureEntry
+}
+
+  rectangle " " as Template{
+    entity "ShowProposal\n**Template**" as showProposalTemplate <<Entity>>{
+               + template
+               + path
+             }
+}
+
+customer "1" --> "*" customerRep : has a set of
+showpropDroneList "1" ---> "1" droneModel : has a
+showpropDroneList "1" ---> "1" figure : has a
+showpropFigureEntry "1" --> "1" figure : has a
+showRequest "*" ------> "1" customer : is requested by
+figure "1" ---> "0..1" customer : exclusive to
+figure "1" -d--> "*" figureCategory : is classified by
+figure -u-> "*" figureKeywords: has
+showProposal -u-> "*" showProposalTemplate: has
+customerRep "1" -u-> "*" showProposal : accepts/rejects
+showProposal "1" -u-> "1" showRequest : obtained after the\nacceptance of
+
+
+@enduml

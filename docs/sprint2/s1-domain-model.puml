@@ -1,0 +1,264 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+hide circles
+
+rectangle "shared/general concepts" {
+    entity Name <<value>>{
+        firstName
+        lastName
+    }
+    entity PhoneNumber <<value>>{
+        countryCode
+        subscriberNumber
+    }
+    entity Address <<value>>{
+        streetName
+        houseNumber
+        postcode
+    }
+    entity Email <<value>>{
+        localPart
+        domain
+    }
+    entity Date <<Value>>{
+        day
+        month
+        year
+    }
+    entity TimeOfDay <<Value>>{
+        hours
+        minutes
+        seconds
+    }
+}
+
+rectangle "system" #bbaacc{
+
+    entity User <<Aggregate Root>><<Entity>>{}
+
+    entity ShodroneEmail <<Value>>{
+        localPart
+    }
+
+    entity UserStatus <<Enum>>{
+        ACTIVE
+        DISABLED
+        DELETED
+    }
+
+    entity UserPassword <<value>>{
+        password
+    }
+
+    entity UserRole <<value>>{}
+    rectangle "system roles" #bbaadd{
+        entity Admin <<role>>{}
+        entity "CRM Manager" <<role>>{}
+        entity "CRM Collaborator" <<role>>{}
+        entity "Show Designer" <<role>>{}
+        entity "Drone Tech" <<role>>{}
+
+
+        Admin -d--|> UserRole
+        "CRM Manager" -d--|> UserRole
+        "CRM Collaborator" -d--|> UserRole
+        "Show Designer" -d--|> UserRole
+        "Drone Tech" -d--|> UserRole
+    }
+
+    User -u-> "1" ShodroneEmail
+    User -u-> "1" UserStatus
+    User -u-> "1" UserPassword
+
+    User -u-> "1" UserRole
+    User -d--> "1" Name
+    User -d--> "1" PhoneNumber
+}
+
+together{
+    rectangle "customer" #aabbcc{
+        entity Customer <<Aggregate Root>><<Entity>>{
+
+        }
+
+        entity VatNumber <<Value>>{
+            countryCode
+            identifier
+        }
+
+        entity CustomerStatus <<Enum>>{
+            INFRINGEMENT
+            DELETED
+            CREATED
+            REGULAR
+            VIP
+        }
+
+        Customer --> "1" VatNumber
+        Customer --> "1" CustomerStatus
+
+        Customer --u--> "1" Name
+        Customer -u-> "1" Address
+    }
+
+    rectangle "representatives" #aabbcc{
+        entity CustomerRepresentative <<Aggregate Root>><<Entity>>{
+
+        }
+
+        entity RepresentativePosition <<Value>>{
+            positionName
+        }
+
+        CustomerRepresentative --> "1" RepresentativePosition
+
+        CustomerRepresentative -u-> "1" Email
+        CustomerRepresentative -u-> "1" Name
+    }
+
+    Customer "1" --> "*" CustomerRepresentative : ""
+}
+
+rectangle "show request" #ccaabb{
+    entity ShowRequest<<Aggregate Root>><<Entity>>{
+        duration
+        numberOfDronesRequested
+        showDescription
+    }
+
+    entity ShowRequestStatus<<Enum>>{
+        CREATED
+        MISSING_FIGURES
+        VALID
+        PROPOSAL
+        PRODUCTION
+    }
+
+    ShowRequest -> "1" ShowRequestStatus
+
+    ShowRequest "1" --> "1" Customer : "requested by"
+
+    ShowRequest -u-> "1" Address : (place)
+    ShowRequest -u-> "1" TimeOfDay : (time)
+}
+
+rectangle "show proposal" #ccaabb{
+    entity ShowProposal<<Aggregate Root>><<Entity>>{
+
+    }
+
+    entity ShowProposalStatus <<Enum>>{
+        CREATED
+        TESTING
+        VALID
+        WAITING_APPROVAL
+        REJECTED
+        IN_PRODUCTION
+    }
+
+    ShowProposal --> "1" ShowProposalStatus
+
+    ShowProposal "1" --> "1" ShowRequest : "generated\nfrom"
+}
+
+rectangle "figures" #aaccbb{
+    entity Figure <<Aggregate Root>><<Entity>>{
+        DSLDescription
+        DSLVersion
+        exclusivity
+        description
+    }
+
+    entity FigureCode <<Value>>{
+        figureCode
+    }
+
+    entity FigureVersion <<Value>>{
+        versionNumber
+    }
+
+    entity FigureStatus <<Enum>>{
+        ACTIVE
+        DECOMMISSIONED
+    }
+
+    Figure -r-> "1" FigureStatus
+    Figure --> "1" FigureCode
+    Figure --> "1" FigureVersion
+    Figure "1" --> "0..*" Customer : "exclusive to"
+
+}
+
+rectangle "show" #ccaabb{
+    entity Show <<Aggregate Root>><<Entity>>{
+
+    }
+
+    entity ShowSchedule <<Value>>{
+
+    }
+
+    ShowSchedule --u--> "1" Date
+    ShowSchedule -u--> "1" TimeOfDay
+
+    Show --> "1" ShowSchedule
+    Show "1" --> "1" ShowProposal : "generated\nfrom"
+    Show "1" --> "*" Figure : "is a sequence of"
+
+}
+
+rectangle "drones" #ccbbaa{
+    entity Drone <<Aggregate Root>><<Entity>>{
+        serialNumber
+    }
+
+    entity DroneModel <<Value>>{
+        modelName
+    }
+    entity DroneType <<value>>{
+        typeName
+    }
+
+    entity DroneRoutine<<Entity>>{
+        droneCode
+    }
+
+    entity DroneStatus<<Enum>>{
+        ACTIVE
+        DECOMMISSIONED
+        REMOVED
+    }
+
+    entity RemovedDroneHistory<<Entity>>{
+        reason
+    }
+
+    entity DroneMaintenance<<Entity>>{
+        reason
+    }
+
+    DroneMaintenance "0..*" --> "1" Drone : "records maintenance of"
+    RemovedDroneHistory "1" --> "0..*" Drone : "provides reason\nto the removal of"
+    RemovedDroneHistory "1" --> "1" TimeOfDay
+    Drone --> "1" DroneType
+    Drone --> "1" DroneModel
+    Drone --> "1" DroneStatus
+    DroneRoutine "1" --> "0..*" Drone : is run by
+
+}
+
+User "1" ----> "0..*" Drone : "(Drone Tech)\nmanages"
+User "1" ----> "*" DroneModel : "(Drone Tech)\ncreates"
+Figure "1" ---> "*" Drone : "is a composition of"
+User "1" ----> "*" Show : "(CRM Team) schedules"
+User "1" ----> "*" Figure : "(Show Designer)\nadds"
+User "1" ----> "*" Figure : "(CRM Collaborator)\nmanages"
+ShowProposal "1" --> "*" Figure : "contains\n a set of"
+Customer "1" --> "0..*" ShowProposal : "accepts/rejects"
+User "1" --> "0..*" User : "(Admin)\nmanages"
+User "1" ----> "*" Customer : "(CRM Collaborator)\nmanages"
+User "1" ----> "*" CustomerRepresentative : "(CRM Collaborator)\nmanages"
+User "1" ----> "0..*" ShowRequest : "(CRM Collaborator)\nregisters"
+
+@enduml

@@ -1,0 +1,68 @@
+@startuml
+
+participant SendShowProposalAction
+participant SendShowProposalUI
+participant SendShowProposalController
+participant PersistenceContext
+participant AppSettings
+participant RepositoryFactory
+participant ShowProposalRepository
+participant DocumentProcessor
+
+SendShowProposalAction -> SendShowProposalUI : SendShowProposalUI().show()
+    activate SendShowProposalUI
+    SendShowProposalUI -> SendShowProposalController : allProposalsReadyToTest()
+        activate SendShowProposalController
+        SendShowProposalController -> PersistenceContext : repositories()
+            PersistenceContext -> AppSettings : getRepositoryFactory()
+                activate AppSettings
+                AppSettings --> RepositoryFactory : create()
+                activate RepositoryFactory
+                RepositoryFactory --> AppSettings
+                AppSettings --> SendShowProposalController
+                deactivate AppSettings
+        SendShowProposalController -> RepositoryFactory : allProposalsReadyToTest()
+        RepositoryFactory -> ShowProposalRepository : create()
+        deactivate RepositoryFactory
+        activate ShowProposalRepository
+        ShowProposalRepository --> SendShowProposalController
+        deactivate ShowProposalRepository
+        SendShowProposalController --> SendShowProposalUI
+            SendShowProposalUI -> SendShowProposalController : getCurrentTemplate()
+        SendShowProposalController -> PersistenceContext : repositories()
+            PersistenceContext -> AppSettings : getRepositoryFactory()
+                activate AppSettings
+                AppSettings --> RepositoryFactory : create()
+                activate RepositoryFactory
+                RepositoryFactory --> AppSettings
+                AppSettings --> SendShowProposalController
+                deactivate AppSettings
+        SendShowProposalController -> RepositoryFactory :  findCurrentShowProposalTemplate()
+        RepositoryFactory -> ShowProposalTemplateRepository : create()
+        deactivate RepositoryFactory
+        activate ShowProposalTemplateRepository
+        ShowProposalTemplateRepository --> SendShowProposalController
+        deactivate ShowProposalTemplateRepository
+        SendShowProposalController --> SendShowProposalUI
+        SendShowProposalUI-> SendShowProposalController:getSubstitutions(Show Proposal)
+   SendShowProposalController -> ShowProposal : getSubstitutions()
+   ShowProposal --> SendShowProposalController
+   SendShowProposalController --> SendShowProposalUI
+SendShowProposalUI -> SendShowProposalController : generateFile(substitutions,template, path)
+   SendShowProposalController -> DocumentProcessor: processTemplate(template, substitutions)
+   activate DocumentProcessor
+   DocumentProcessor --> SendShowProposalController
+  deactivate DocumentProcessor
+   SendShowProposalUI -> SendShowProposalController : changeShowProposalStatus(Show Proposal)
+           SendShowProposalController -> ShowProposal : setStatus(showProposal)
+           activate ShowProposal
+           ShowProposal -> SendShowProposalController
+            deactivate ShowProposal
+            SendShowProposalController-> ShowProposalRepository: save(showProposal)
+            activate ShowProposalRepository
+            ShowProposalRepository -> SendShowProposalController
+            deactivate ShowProposalRepository
+        SendShowProposalController --> SendShowProposalUI
+
+
+       @enduml

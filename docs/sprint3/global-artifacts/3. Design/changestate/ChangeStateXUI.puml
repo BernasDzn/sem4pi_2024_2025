@@ -1,0 +1,45 @@
+@startuml
+
+participant ChangeStateXAction
+participant ChangeStateXUI
+participant ChangeStateXController
+participant PersistenceContext
+participant AppSettings
+participant RepositoryFactory
+participant XRepository
+
+ChangeStateXAction -> ChangeStateXUI : ChangeStateXUI().show()
+    activate ChangeStateXUI
+    ChangeStateXUI -> ChangeStateXController : AllX()
+        activate ChangeStateXController
+        ChangeStateXController -> PersistenceContext : repositories()
+            PersistenceContext -> AppSettings : instance()
+            PersistenceContext -> AppSettings : getRepositoryFactory()
+                activate AppSettings
+                AppSettings --> RepositoryFactory : create()
+                activate RepositoryFactory
+                RepositoryFactory --> AppSettings
+                AppSettings --> ChangeStateXController
+                deactivate AppSettings
+        ChangeStateXController -> RepositoryFactory : allX()
+        RepositoryFactory -> XRepository : create()
+        deactivate RepositoryFactory
+        activate XRepository
+        XRepository --> ChangeStateXController
+        deactivate XRepository
+        ChangeStateXController --> ChangeStateXUI : list
+           ChangeStateXUI -> ChangeStateXController : ChangeStateX()
+           ChangeStateXController -> X : setState(state)
+           activate X
+           X -> ChangeStateXController
+            ChangeStateXController -> X : updateDate()
+            X -> ChangeStateXController
+            deactivate X
+        ChangeStateXController -> ChangeStateXUI
+        deactivate ChangeStateXController
+        ChangeStateXUI -> ChangeStateXAction
+        deactivate ChangeStateXUI
+
+
+
+@enduml

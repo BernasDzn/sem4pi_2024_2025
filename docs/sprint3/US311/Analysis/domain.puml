@@ -1,0 +1,89 @@
+@startuml US311_Domain
+
+title "US311 Domain Model"
+
+hide circles
+skinparam node {
+    BorderColor white
+    BackgroundColor white
+}
+
+node " " as figure_node{
+    rectangle " " as figure_rec{
+        entity "**Figure**" as figure <<AggregateRoot>> <<Entity>>{}
+
+        
+    }
+
+}
+
+rectangle " " as droneModel_rec{
+    entity "**DroneModel**" as droneModel <<AggregateRoot>> <<Entity>>{}
+
+    entity "DroneModel\n**Name**" as droneName <<Value>> <<Designation>>{
+        + name
+    }
+
+    entity "**DroneDSL**" as droneDSL <<Value>> <<DSL>>{
+        + dsl_version
+        + dsl_syntax
+    }
+
+    droneModel --> "1" droneName
+    droneModel --> "1" droneDSL
+}
+
+rectangle " " as showProposal_rec{
+
+    entity "**ShowProposal**" as showProposal <<AggregateRoot>> <<Entity>>{}
+
+
+    entity "Proposed\n**Date**" as showpropDate <<Value>> <<Date>>{
+        + date
+    }
+
+    entity "Proposed\n**Time**" as showpropTime <<Value>> <<Time>>{
+        + time
+    }
+
+    entity "Proposed\n**Duration**" as showpropDuration <<Value>> <<Time>>{
+        + duration
+    }
+
+    entity "Proposed\n**Place**" as showpropPlace <<Value>> <<Gelocation>>{
+        + latitude
+        + longitude
+    }
+
+    entity "ShowProposal\n**Figure**" as showpropFigure <<Entity>>{
+        + orderNumber
+    }
+
+    entity "ShowProposal\n**DroneModelTypes**" as showpropDroneList <<Entity>>{
+        + droneTypes
+    }
+
+    entity "ShowProposal\n**Description**" as showpropDescription <<Value>> <<Document>>{
+        + show_proposal_doc
+    }
+
+    entity "ShowProposal\n**Video**" as showpropVideo <<Value>> <<Video>>{
+        + video_url
+    }
+
+    showProposal -u-> "1" showpropDate
+    showProposal -u-> "1" showpropTime
+    showProposal -u-> "1" showpropDuration
+    showProposal -u-> "1" showpropPlace
+    showProposal -r-> "*" showpropDroneList
+    showProposal -u-> "1" showpropDescription
+    showProposal -u-> "1" showpropVideo
+    showProposal -u-> "*" showpropFigure
+}
+
+showpropDroneList "1" ---> "1" droneModel : has a
+showpropDroneList "1" ---> "1" figure : has a
+showpropFigure "1" --> "1" figure : has a
+
+
+@enduml

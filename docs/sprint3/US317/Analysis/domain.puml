@@ -1,0 +1,168 @@
+@startuml domain_model
+
+hide circles
+skinparam node {
+    BorderColor white
+    BackgroundColor white
+}
+
+rectangle " " as customerRepresentative_rec{
+    entity "Customer\n**Representative**" as customerRep <<Aggregate Root>> <<Entity>>{}
+
+    entity "Representative\n**Email**" as repEmail <<Value>> <<Email>>{
+        + local_part
+        + domain
+    }
+
+    entity "Representative\n**Name**" as repName <<Value>> <<Designation>>{
+        + first_name
+        + last_name
+    }
+
+    entity "Representative\n**Position**" as repPosition <<Value>>{
+        + position_name
+    }
+
+    entity "Representative\n**Status**" as repStatus <<Enum>>{
+        ACTIVE
+        INACTIVE
+    }
+
+    entity "ClientApp\n**User**" as custRepClientAppUser <<User>> #dddddd{
+        + username
+        + password
+    }
+
+    customerRep --> "1" repEmail
+    customerRep --> "1" repName
+    customerRep --> "1" repPosition
+    customerRep --> "1" repStatus
+    customerRep -l-|> custRepClientAppUser
+}
+
+node " " as figure_node{
+    rectangle " " as figure_rec{
+        entity "**Figure**" as figure <<AggregateRoot>> <<Entity>>{}
+
+        entity "Figure\n**Description**" as figureDescription <<Value>> <<Description>>{
+            + description
+        }
+
+        entity "Figure\n**Version**" as figureVersion <<Value>>{
+            + version_number
+        }
+
+        entity "Figure\n**Name**" as figureName <<Value>> <<Designation>>{
+            + name
+        }
+
+        entity "**FigureDSL**" as figureDSL <<Value>> <<DSL>>{
+            + dsl_version
+            + dsl_syntax
+            + drone_types
+        }
+
+        entity "Figure\n**Status**" as figureStatus <<Enumerator>>{
+            COMISSIONED
+            DECOMISSIONED
+            PRIVATE
+        }
+
+        entity "Figure\n**Keyword**" as figureKeywords <<Value>>{
+            + keyword
+        }
+
+        figure -u-> "1" figureDescription
+        figure -u-> "1" figureVersion
+        figure -u-> "1" figureName
+        figure -u-> "1" figureDSL
+        figure -u-> "1" figureStatus
+        figure -u-> "*" figureKeywords
+    }
+}
+
+rectangle " " as droneModel_rec{
+    entity "**DroneModel**" as droneModel <<AggregateRoot>> <<Entity>>{}
+
+    entity "DroneModel\n**Name**" as droneName <<Value>> <<Designation>>{
+        + name
+    }
+
+    entity "**DroneDSL**" as droneDSL <<Value>> <<DSL>>{
+        + dsl_version
+        + dsl_syntax
+    }
+
+    droneModel --> "1" droneName
+    droneModel --> "1" droneDSL
+}
+
+rectangle " " as showProposal_rec{
+
+    entity "**ShowProposal**" as showProposal <<AggregateRoot>> <<Entity>>{}
+
+
+    entity "Proposed\n**Date**" as showpropDate <<Value>> <<Date>>{
+        + date
+    }
+
+    entity "Proposed\n**Time**" as showpropTime <<Value>> <<Time>>{
+        + time
+    }
+
+    entity "Proposed\n**Duration**" as showpropDuration <<Value>> <<Time>>{
+        + duration
+    }
+
+    entity "Proposed\n**Place**" as showpropPlace <<Value>> <<Gelocation>>{
+        + latitude
+        + longitude
+    }
+
+    entity "ShowProposal\n**Figure**" as showpropFigure <<Entity>>{
+        + orderNumber
+    }
+
+    entity "ShowProposal\n**DroneModelTypes**" as showpropDroneList <<Entity>>{
+        + droneTypes
+    }
+
+    entity "ShowProposal\n**Description**" as showpropDescription <<Value>> <<Document>>{
+        + show_proposal_doc
+    }
+
+    entity "ShowProposal\n**Video**" as showpropVideo <<Value>> <<Video>>{
+        + video_url
+    }
+
+    entity "ShowProposal\n**AcceptanceEmail**" as showpropAcceptanceEmail <<Value>> <<Email>> #eeffee{
+        + acceptanceEmail
+    }
+
+    showProposal -u-> "1" showpropDate
+    showProposal -u-> "1" showpropTime
+    showProposal -u-> "1" showpropDuration
+    showProposal -u-> "1" showpropPlace
+    showProposal -r-> "*" showpropDroneList
+    showProposal -u-> "1" showpropDescription
+    showProposal -u-> "1" showpropVideo
+    showProposal -u-> "*" showpropFigure
+    showProposal -u-> "1" showpropAcceptanceEmail
+}
+
+rectangle " " as show_red{
+    
+    entity "**Show**" as show <<AggregateRoot>> <<Entity>>#eeffee{
+
+    }
+
+}
+
+showpropDroneList "1" --> "1" droneModel : has a
+showpropDroneList "1" -r--> "1" figure : has a
+showpropFigure "1" -r--> "1" figure : has a
+customerRep "1" -u-> "*" showProposal : accepts/rejects
+showProposal "1" -d-> "0..1" show : creates
+
+
+@enduml

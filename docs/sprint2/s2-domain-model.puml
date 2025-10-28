@@ -1,0 +1,323 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+hide circles
+
+rectangle "system"{
+
+    entity User <<Aggregate Root>><<Entity>>{
+        unique valid email from shodrone domain
+        name
+        phone number
+        user role
+        password
+    }
+
+}
+
+rectangle "customer" {
+    entity Customer <<Aggregate Root>><<Entity>>{}
+
+    entity VATNumber <<Value>>{
+        countryCode
+        uniqueNumber
+    }
+
+    entity CustomerAddress <<Value>>{
+        streetName
+        addressNumber
+        postalCode
+        city
+        country
+    }
+
+    entity CustomerName <<Value>>{
+        name
+    }
+
+    entity CustomerStatus <<Enumerator>>{
+        INFRINGEMENT
+        DELETED
+        CREATED
+        REGULAR
+        VIP
+    }
+
+    Customer --> "1" VATNumber
+    Customer --> "1" CustomerAddress
+    Customer --> "1" CustomerName
+    Customer --> "1" CustomerStatus
+}
+
+rectangle "representative" {
+    entity CustomerRepresentative <<Aggregate Root>><<Entity>>{}
+
+    entity RepresentativeEmail <<Value>>{
+        localPart
+        domain
+    }
+
+    entity RepresentativeName <<Value>>{
+        firstName
+        middleNames
+        lastName
+    }
+
+    entity Position <<Value>>{
+        positionName
+    }
+
+    entity RepresentativeStatus <<Enumerator>>{
+        ACTIVE
+        INACTIVE
+    }
+
+    CustomerRepresentative --> "1" RepresentativeEmail
+    CustomerRepresentative --> "1" RepresentativeName
+    CustomerRepresentative --> "1" Position
+    CustomerRepresentative --> "1" RepresentativeStatus
+}
+
+rectangle "figure"{
+    entity Figure <<Aggregate Root>><<Entity>>{
+        codeNumber
+    }
+
+    entity FigureDSLCode <<Value>>{
+       DSLcode
+       DSLversion
+    }
+
+    entity FigureDescription <<Value>>{
+        description
+    }
+
+    entity FigureVersion <<Value>>{
+        versionNumber
+    }
+
+     entity FigureName <<Value>>{
+            name
+        }
+
+ entity FigureStatus <<Enumerator>>{
+        COMISSIONED
+        DECOMISSIONED
+        PRIVATE
+    }
+
+entity FigureKeywords <<Value>>{
+            keywords
+        }
+
+    Figure --> "1" FigureDSLCode
+    Figure --> "1" FigureDescription
+    Figure --> "1" FigureVersion
+    Figure --> "1" FigureName
+    Figure --> "1" FigureStatus
+    Figure --> "1" FigureKeywords
+
+
+}
+
+rectangle "figure category" {
+    entity FigureCategory <<Aggregate Root>> <<Entity>>{
+        creationDate
+        lastStatusUpdateDate
+    }
+
+    entity FigureCategoryName <<Value>>{
+        name
+    }
+
+    entity FigureCategoryDescription <<Value>>{
+        description
+    }
+
+    FigureCategory --> "1" FigureCategoryName
+    FigureCategory --> "1" FigureCategoryDescription
+}
+
+rectangle "show request"{
+    entity ShowRequest <<Aggregate Root>><<Entity>>{}
+
+    entity ReqShowPlace <<Value>>{
+        latitude
+        longitude
+    }
+
+    entity ReqShowTime <<Value>>{
+        day
+        month
+        year
+        hours
+        minutes
+    }
+
+    entity ReqNumberOfDrones<<Value>>{
+        numberOfDrones
+    }
+
+    entity ReqShowDuration<<Value>>{
+        minutes
+    }
+
+    entity ReqShowDescription<<Value>>{
+        descriptionDocument
+    }
+
+    entity ShowRequestVersion <<Entity>>{
+        versionNumber
+    }
+
+    entity ShowRequestStatus <<Enumerator>>{
+        NEW
+        VALID
+        IMPOSSIBLE
+        MISSING_FIGURES
+        TO_PROPOSAL
+        IN_PRODUCTION
+    }
+
+    ShowRequest --> "1" ShowRequestStatus
+    ShowRequest --> "1" ReqShowDescription
+    ShowRequest --> "1" ReqShowDuration
+    ShowRequest --> "1" ReqNumberOfDrones
+    ShowRequest --> "1" ReqShowPlace
+    ShowRequest --> "1" ReqShowTime
+    ShowRequestVersion "1" -l> "1" ShowRequest : "saves a\nversion of"
+}
+
+rectangle "show proposal"{
+    entity ShowProposal <<Aggregate Root>><<Entity>>{}
+
+    entity ShowProposalDescription <<Value>>{
+        description
+    }
+
+    entity ShowProposalDuration <<Value>>{
+        minutes
+    }
+
+    entity ShowProposalNumberOfDrones <<Value>>{
+        numberOfDrones
+    }
+
+    entity ShowProposalVideo <<Entity>>{
+        url
+    }
+
+    entity ShowProposalDate <<Value>>{
+        day
+        month
+        year
+    }
+
+    entity ShowProposalPlace <<Value>>{
+        latitude
+        longitude
+    }
+
+    entity ShowProposalStatus <<Enumerator>>{
+        CREATED
+        TESTING
+        WAITING_APPROVAL
+        APPROVED
+        REJECTED
+        IN_PRODUCTION
+    }
+
+    ShowProposal --> "1" ShowProposalStatus
+    ShowProposal --> "1" ShowProposalDescription
+    ShowProposal --> "1" ShowProposalDuration
+    ShowProposal --> "1" ShowProposalNumberOfDrones
+    ShowProposal --> "1" ShowProposalVideo
+    ShowProposal --> "1" ShowProposalDate
+    ShowProposal --> "1" ShowProposalPlace
+}
+
+rectangle "drone"{
+    entity Drone <<Aggregate Root>><<Entity>>{
+        serialNumber
+    }
+
+    entity DroneModel <<Value>>{
+        modelName
+    }
+    entity DroneType <<value>>{
+        typeName
+    }
+
+    entity DroneRoutine<<Entity>>{
+        droneCode
+    }
+
+    entity DroneStatus<<Enum>>{
+        ACTIVE
+        DECOMMISSIONED
+        REMOVED
+    }
+
+    entity RemovedDroneHistory<<Entity>>{
+        reason
+    }
+
+    entity DroneMaintenance<<Entity>>{
+        reason
+    }
+
+    DroneMaintenance "0..*" --> "1" Drone : "records maintenance of"
+    RemovedDroneHistory "1" --> "0..*" Drone : "provides reason\nto the removal of"
+    RemovedDroneHistory "1" --> "1" TimeOfDay
+    Drone --> "1" DroneType
+    Drone --> "1" DroneModel
+    Drone --> "1" DroneStatus
+    DroneRoutine "1" --> "0..*" Drone : is run by
+
+}
+
+rectangle "show" {
+    entity Show <<Aggregate Root>><<Entity>>{
+
+    }
+
+    entity ShowSchedule <<Value>>{
+        startTime
+        endTime
+    }
+
+
+    Show --> "1" ShowSchedule
+    Show "1" --> "1" ShowProposal : "generated\nfrom"
+    Show "1" --> "*" Figure : "is a sequence of"
+
+}
+
+Figure "1" ---> "*" Drone : "is a composition of"
+User "1" ----> "0..*" Drone : "(Drone Tech)\nmanages"
+
+
+'--- layer 1
+Figure "*" ---u---> "1" User : "(Show Designer)\nis designed by"
+ShowRequest "*" ---u---> "0..1" User : "(Show Designer)\nis assigned to"
+ShowRequest "*" ---u---> "1" User : "(CRM Collaborator)\nis created and\nauthored by"
+
+'--- layer 2
+Show "1" -d--> "1" ShowProposal : "c"
+
+'--- layer 3
+ShowProposal "1" ---> "*" Figure : "has a sequence of"
+ShowProposal "0..1" ---> "1" ShowRequest : "created from"
+CustomerRepresentative "1" -u-> "*" ShowProposal : "accepts\nor rejects"
+
+'--- layer 4
+Figure "0..*" ----> "1" Customer : "can be\nexclusive to"
+ShowRequest "*" ----> "1" Customer : "requested by"
+Figure "1" ----> "1" FigureCategory
+
+'--- layer 5
+Customer "1" ----> "*" CustomerRepresentative : "has a list of"
+
+
+
+@enduml

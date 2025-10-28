@@ -1,0 +1,53 @@
+@startuml
+
+participant SearchXAction
+participant SearchXUI
+participant SearchXController
+participant PersistenceContext
+participant AppSettings
+participant RepositoryFactory
+participant XRepository
+
+SearchXAction -> SearchXUI : SearchXUI().show()
+    activate SearchXUI
+    SearchXUI -> SearchXController : AllX()
+        activate SearchXController
+        SearchXController -> PersistenceContext : repositories()
+            PersistenceContext -> AppSettings : instance()
+            PersistenceContext -> AppSettings : getRepositoryFactory()
+                activate AppSettings
+                AppSettings --> RepositoryFactory : create()
+                activate RepositoryFactory
+                RepositoryFactory --> AppSettings
+                AppSettings --> SearchXController
+                deactivate AppSettings
+        SearchXController -> RepositoryFactory : allX()
+        RepositoryFactory -> XCategoryRepository : create()
+        deactivate RepositoryFactory
+        activate XCategoryRepository
+        XCategoryRepository --> SearchXController
+        deactivate XCategoryRepository
+        SearchXController --> SearchXUI : list
+           SearchXUI -> SearchXController : SearchXwithXCategory()
+         SearchXController -> PersistenceContext : repositories()
+                     PersistenceContext -> AppSettings : instance()
+                     PersistenceContext -> AppSettings : getRepositoryFactory()
+                         activate AppSettings
+                         AppSettings --> RepositoryFactory : create()
+                         activate RepositoryFactory
+                         RepositoryFactory --> AppSettings
+                         AppSettings --> SearchXController
+                         deactivate AppSettings
+                 SearchXController -> RepositoryFactory : allXwithCategory()
+                 RepositoryFactory -> XRepository : create()
+                 deactivate RepositoryFactory
+                 activate XRepository
+                 XRepository --> SearchXController
+                 deactivate XRepository
+                 SearchXController --> SearchXUI : listAllXWithXCategory()
+        SearchXUI -> SearchXAction
+        deactivate SearchXUI
+
+
+
+@enduml

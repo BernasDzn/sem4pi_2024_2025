@@ -1,0 +1,62 @@
+@startuml
+
+title SD - Register ShowProposal
+
+participant RegisterShowProposalAction
+participant RegisterShowProposalUI
+participant RegisterShowProposalController
+participant PersistenceContext
+participant AppSettings
+participant RepositoryFactory
+participant ShowProposalRepository
+participant ShowProposal
+
+RegisterShowProposalAction -> RegisterShowProposalUI : RegisterShowProposalUI().show()
+activate RegisterShowProposalUI
+RegisterShowProposalUI -> RegisterShowProposalController : RegisterShowProposal()
+    activate RegisterShowProposalController
+        RegisterShowProposalController -> PersistenceContext : repositories()
+        activate PersistenceContext
+        PersistenceContext -> AppSettings : instance()
+
+        activate AppSettings
+        AppSettings --> PersistenceContext
+        PersistenceContext -> AppSettings : getRepositoryFactory()
+        AppSettings --> PersistenceContext : return factoryClassName
+        deactivate AppSettings
+        PersistenceContext -> RepositoryFactory : create()
+        activate RepositoryFactory
+        RepositoryFactory --> PersistenceContext : return RepositoryFactory
+        deactivate RepositoryFactory
+        PersistenceContext --> RegisterShowProposalController : return RepositoryFactory
+        deactivate PersistenceContext
+
+        RegisterShowProposalController -> RepositoryFactory : showProposalRepository()
+        activate RepositoryFactory
+        RepositoryFactory -> ShowProposalRepository : create()
+        activate ShowProposalRepository
+        ShowProposalRepository --> RepositoryFactory : return ShowProposalRepository
+        deactivate ShowProposalRepository
+        RepositoryFactory --> RegisterShowProposalController : return ShowProposalRepository
+        deactivate RepositoryFactory
+
+        RegisterShowProposalController -> ShowProposal : newShowProposal = create(showRequest, description, duration, numberOfDrones, video, place, date)
+        activate ShowProposal
+        ShowProposal --> RegisterShowProposalController
+        deactivate ShowProposal
+
+        RegisterShowProposalController -> ShowProposalRepository : save(newShowProposal)
+        activate ShowProposalRepository
+        ShowProposalRepository --> RegisterShowProposalController
+        deactivate ShowProposalRepository
+
+
+        RegisterShowProposalController --> RegisterShowProposalUI : Register message
+    deactivate RegisterShowProposalController
+RegisterShowProposalUI --> RegisterShowProposalAction
+deactivate RegisterShowProposalUI
+
+@enduml
+
+
+@enduml

@@ -1,0 +1,131 @@
+@startuml test
+
+hide circles
+skinparam node {
+  BorderColor white 
+  BackgroundColor white
+}
+
+rectangle " " as customer_rec{
+    entity "**Customer**" as customer <<Aggregate Root>> <<Entity>> {}
+
+    entity "**VATNumber**" as customerVAT <<Value>>{
+        + country_code
+        + unique_number
+    }
+
+    entity "Customer\n**Address**" as customerAddress <<Value>><<Address>>{
+        + street_name
+        + address_number
+        + postal_code
+        + country
+        + city
+    }
+
+    entity "Customer\n**Name**" as customerName <<Value>> <<Designation>>{
+        + name
+    }
+
+    entity "Customer\n**Status**" as customerStatus <<Enum>>{
+        INFRINGEMENT
+        DELETED
+        CREATED
+        REGULAR
+        VIP
+    }
+
+    customer --> "1" customerVAT
+    customer --> "1" customerAddress
+    customer --> "1" customerName
+    customer --> "1" customerStatus
+}
+
+rectangle " " as showProposal_rec{
+    
+    entity "**ShowProposal**" as showProposal <<AggregateRoot>> <<Entity>>{}
+
+
+    entity "Proposed\n**Date**" as showpropDate <<Value>> <<Date>>{
+        + date
+    }
+
+    entity "Proposed\n**Time**" as showpropTime <<Value>> <<Time>>{
+        + time
+    }
+
+    entity "Proposed\n**Duration**" as showpropDuration <<Value>> <<Time>>{
+        + duration
+    }
+
+    entity "Proposed\n**Place**" as showpropPlace <<Value>> <<Gelocation>>{
+        + latitude
+        + longitude
+    }
+
+    entity "Proposed\n**DroneList**" as showpropDroneList <<Value>>{
+        + number_of_drones
+    }
+
+
+    showProposal -u-> "1" showpropDate
+    showProposal -u-> "1" showpropTime
+    showProposal -u-> "1" showpropDuration
+    showProposal -u-> "1" showpropPlace
+    showProposal -r-> "1" showpropDroneList
+    
+}
+
+rectangle " " as showRequest_rec{
+
+	entity "**ShowRequest**" as showRequest <<AggregateRoot>> <<Entity>>{}
+
+    entity "Requested\n**Place**" as showreqPlace <<Value>> <<Gelocation>>{
+        + latitude
+        + longitude
+    }
+
+    entity "Requested\n**Date**" as showreqDate <<Value>> <<Date>>{
+        + date
+    }
+
+    entity "Requested\n**Time**" as showreqTime <<Value>> <<Time>>{
+        + time
+    }
+
+    entity "Requested\n**Duration**" as showreqDuration <<Value>> <<Time>>{
+        + duration
+    }
+
+    entity "Requested\n**NumberOfDrones**" as showreqNofDrones <<Value>> <<Quantity>>{
+        + number_of_drones
+    }
+
+    entity "ShowRequest\n**Description**" as showreqDescription <<Value>> <<Document>>{
+        + show_request_doc
+    }
+
+    entity "**ShowDesigner**" as showreqShowDesigner <<User>> #dddddd{}
+
+    showRequest -u-> "1" showreqDescription
+    showRequest -u-> "1" showreqPlace
+    showRequest -u-> "1" showreqDate
+    showRequest -u-> "1" showreqTime
+    showRequest -u-> "1" showreqDuration
+    showRequest -u-> "1" showreqNofDrones
+    showRequest "*" -l-> "0..*" showreqShowDesigner : assigned to
+
+}
+ rectangle " " as Template{
+    entity "ShowProposal\n**Template**" as showProposalTemplate <<Entity>>{
+               + template
+               + path
+             }
+}
+
+
+showProposal -u-> "*" showProposalTemplate: has
+
+showProposal "1" -u-> "1" showRequest : obtained after the\nacceptance of
+showRequest "*" --> "1" customer : is requested by
+
+@enduml

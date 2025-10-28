@@ -1,0 +1,92 @@
+@startuml
+
+title SD - Add Figure to Show Proposal
+
+participant RegisterShowProposalAction
+participant RegisterShowProposalUI
+participant ListFigureController
+participant RegisterShowProposalController
+participant PersistenceContext
+participant AppSettings
+participant RepositoryFactory
+participant ShowProposalRepository
+participant ShowProposal
+
+RegisterShowProposalAction -> RegisterShowProposalUI : RegisterShowProposalUI().show()
+activate RegisterShowProposalUI
+
+group askFiguresAndDroneModelsType()
+    RegisterShowProposalUI -> ListFigureController : allComissionedFigures()
+    activate ListFigureController
+    ListFigureController --> RegisterShowProposalUI : return allComissionedFigures
+    deactivate ListFigureController
+
+    group Loop   [Add selected Figures to selectedFigures in controller]
+        RegisterShowProposalUI -> RegisterShowProposalController : addFigure(figure, order)
+        activate RegisterShowProposalController
+        RegisterShowProposalController --> RegisterShowProposalUI
+        deactivate RegisterShowProposalController
+    end
+end
+group askDroneModelTypes(figuresDroneTypes)
+    group askDroneModel() [return selectedDroneModel]
+        RegisterShowProposalUI -> RegisterShowProposalController : getAllDroneModels()
+        activate RegisterShowProposalController
+        RegisterShowProposalController --> RegisterShowProposalUI : return allDroneModels
+        deactivate RegisterShowProposalController
+    end
+
+    group Loop   [Add all selected Drone Models and respective Types and Figures to selectedDroneModelTypes in controller]
+        RegisterShowProposalUI -> RegisterShowProposalController : addDroneModelType(droneModel, figure, droneTypes.get(droneModel) (Drone Types))
+        activate RegisterShowProposalController
+        RegisterShowProposalController --> RegisterShowProposalUI
+        deactivate RegisterShowProposalController
+    end
+end
+RegisterShowProposalUI -> RegisterShowProposalController : RegisterShowProposal()
+    activate RegisterShowProposalController
+        RegisterShowProposalController -> PersistenceContext : repositories()
+        activate PersistenceContext
+        PersistenceContext -> AppSettings : instance()
+
+        activate AppSettings
+        AppSettings --> PersistenceContext
+        PersistenceContext -> AppSettings : getRepositoryFactory()
+        AppSettings --> PersistenceContext : return factoryClassName
+        deactivate AppSettings
+        PersistenceContext -> RepositoryFactory : create()
+        activate RepositoryFactory
+        RepositoryFactory --> PersistenceContext : return RepositoryFactory
+        deactivate RepositoryFactory
+        PersistenceContext --> RegisterShowProposalController : return RepositoryFactory
+        deactivate PersistenceContext
+
+        RegisterShowProposalController -> RepositoryFactory : showProposalRepository()
+        activate RepositoryFactory
+        RepositoryFactory -> ShowProposalRepository : create()
+        activate ShowProposalRepository
+        ShowProposalRepository --> RepositoryFactory : return ShowProposalRepository
+        deactivate ShowProposalRepository
+        RepositoryFactory --> RegisterShowProposalController : return ShowProposalRepository
+        deactivate RepositoryFactory
+
+        RegisterShowProposalController -> ShowProposal : newShowProposal = create(showRequest, description, duration, numberOfDrones, selectedFigures, selectedDroneModelTypes, video, place, date)
+        activate ShowProposal
+        ShowProposal --> RegisterShowProposalController
+        deactivate ShowProposal
+
+        RegisterShowProposalController -> ShowProposalRepository : save(newShowProposal)
+        activate ShowProposalRepository
+        ShowProposalRepository --> RegisterShowProposalController
+        deactivate ShowProposalRepository
+
+
+        RegisterShowProposalController --> RegisterShowProposalUI : Register message
+    deactivate RegisterShowProposalController
+RegisterShowProposalUI --> RegisterShowProposalAction
+deactivate RegisterShowProposalUI
+
+@enduml
+
+
+@enduml

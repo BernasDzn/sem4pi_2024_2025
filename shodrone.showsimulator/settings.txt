@@ -1,0 +1,2 @@
+maximumCollisionsAllowed=5
+arraySize=100

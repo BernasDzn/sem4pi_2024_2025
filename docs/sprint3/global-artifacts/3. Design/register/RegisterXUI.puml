@@ -1,0 +1,59 @@
+@startuml
+
+title SD - Register X
+
+participant RegisterXAction
+participant RegisterXUI
+participant RegisterXController
+participant PersistenceContext
+participant AppSettings
+participant RepositoryFactory
+participant XRepository
+participant XClass
+
+RegisterXAction -> RegisterXUI : RegisterXUI().show()
+activate RegisterXUI
+RegisterXUI -> RegisterXController : RegisterX()
+    activate RegisterXController
+        RegisterXController -> PersistenceContext : repositories()
+        activate PersistenceContext
+        PersistenceContext -> AppSettings : instance()
+    
+        activate AppSettings
+        AppSettings --> PersistenceContext
+        PersistenceContext -> AppSettings : getRepositoryFactory()
+        AppSettings --> PersistenceContext : return factoryClassName
+        deactivate AppSettings
+        PersistenceContext -> RepositoryFactory : create()
+        activate RepositoryFactory
+        RepositoryFactory --> PersistenceContext : return RepositoryFactory
+        deactivate RepositoryFactory
+        PersistenceContext --> RegisterXController : return RepositoryFactory
+        deactivate PersistenceContext
+
+        RegisterXController -> RepositoryFactory : xRepository()
+        activate RepositoryFactory
+        RepositoryFactory -> XRepository : create()
+        activate XRepository
+        XRepository --> RepositoryFactory : return XRepository
+        deactivate XRepository
+        RepositoryFactory --> RegisterXController : return XRepository
+        deactivate RepositoryFactory
+
+        RegisterXController -> XClass : newX = create(params)
+        activate XClass
+        XClass --> RegisterXController
+        deactivate XClass
+
+        RegisterXController -> XRepository : save(newX)
+        activate XRepository
+        XRepository --> RegisterXController
+        deactivate XRepository
+
+
+        RegisterXController --> RegisterXUI : Register message
+    deactivate RegisterXController
+RegisterXUI --> RegisterXAction
+deactivate RegisterXUI
+
+@enduml

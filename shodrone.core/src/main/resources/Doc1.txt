@@ -1,0 +1,35 @@
+Dear,
+John Customer
+Your Average Customer, LDA.
+Rua do Cliente, nº 123, 1234-567 Lisbon, Portugal
+PT123456789
+
+Reference 1 / 15/06/2025 20:45
+Show Proposal
+
+Your Average Customer, LDA. is a VIP client and Shodrone is pleased to submit for your consideration a proposal for the execution of an aerial show with drones, as described below.
+Shodrone is a company that prioritizes safety, which is why it uses the most advanced AI technology to support the development of its shows, with all shows being previously and carefully tested/simulated with AI-Test© technology before being presented to the client. In the link https://example.com/video.mp4 there is a video with a simulation of the proposed show.
+
+With the application of AI-Test©, a Shodrone exclusive, we are confident in offering liability insurance in the amount of 1,000,000 EUR for the show. Detailed show data is presented in the attachment.
+
+Looking forward to hearing from you soon.
+
+Best regards,
+
+Poweruser
+CRM Manager
+
+
+
+Attachment – Show Details 1
+
+Location – 41.11563539854244, -8.617785266181848
+Date – 24/12/2090
+Time – 12:00
+Duration – 60m minutes
+
+#List of used drones
+Test Drone Model – 1 units.
+
+#List of figures
+1 – Test

@@ -1,0 +1,14 @@
+[P 71409] [T 71409] ===================================
+[P 71409] [T 71409] Number of drones: 10
+[P 71409] [T 71411] Collision detected at time step 4 for drone 0 at position (9, 65, 64)
+[P 71409] [T 71411] Collision detected at time step 4 for drone 1 at position (9, 65, 64)
+[P 71409] [T 71411] Collision detected at time step 4 for drone 2 at position (9, 65, 64)
+[P 71409] [T 71411] Collision detected at time step 4 for drone 3 at position (9, 65, 64)
+[P 71409] [T 71411] Collision detected at time step 4 for drone 4 at position (9, 65, 64)
+[P 71409] [T 71411] Collision detected at time step 7 for drone 4 at position (42, 53, 10)
+[P 71409] [T 71411] Collision detected at time step 7 for drone 5 at position (42, 53, 10)
+[P 71409] [T 71411] Collision detected at time step 7 for drone 8 at position (42, 53, 10)
+[P 71409] [T 71411] Simulation ended without reaching maximum collisions.
+[P 71409] [T 71411] Total collisions: 8
+[P 71409] [T 71411] Simulation time: 10 time steps.
+[P 71409] [T 71411] Simulation result: SUCCESS

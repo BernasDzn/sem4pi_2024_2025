@@ -1,0 +1,34 @@
+@startuml
+
+participant ListXAction
+participant ListXUI
+participant ListXController
+participant PersistenceContext
+participant AppSettings
+participant RepositoryFactory
+participant XRepository
+
+ListXAction -> ListXUI : ListXUI().show()
+    activate ListXUI
+    ListXUI -> ListXController : listX()
+        activate ListXController
+        ListXController -> PersistenceContext : repositories()
+            PersistenceContext -> AppSettings : instance()
+            PersistenceContext -> AppSettings : getRepositoryFactory()
+                activate AppSettings
+                AppSettings --> RepositoryFactory : create()
+                activate RepositoryFactory
+                RepositoryFactory --> AppSettings
+                AppSettings --> ListXController
+                deactivate AppSettings
+        ListXController -> RepositoryFactory : allX()
+        RepositoryFactory -> XRepository : create()
+        activate XRepository
+        XRepository --> ListXController
+        deactivate XRepository
+        ListXController --> ListXUI : list
+        deactivate ListXController
+        ListXUI --> ListXAction
+        deactivate ListXUI
+
+@enduml

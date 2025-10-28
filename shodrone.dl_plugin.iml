@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="AdditionalModuleElements">
+    <content url="file://$MODULE_DIR$/shodrone.dl_plugin" dumb="true">
+      <sourceFolder url="file://$MODULE_DIR$/shodrone.dl_plugin/target/generated-sources/antlr4" isTestSource="false" generated="true" />
+    </content>
+  </component>
+</module>
